@@ -17,5 +17,4 @@ The gobot driver for stepper motors was used to controll the scanner 2 axis.
 
 ## Software
 ### Development
-[Install Go and TinyGo](https://tinygo.org/getting-started/install/)
 ## Result
