@@ -26,9 +26,9 @@
                 </div>
                 <div class="flex flex-col justify-center items-center mt-4 bg-gray-600 min-w-44 rounded-xl p-4">
                     <h1 class="font-bold text-xl mb-3 text-cente text-gray-200">Stats</h1>
-                    <p class="text-gray-400"> <b>Motor One:</b> <span>value</span></p>
-                    <p class="text-gray-400"> <b>Motor Twp:</b> <span>value</span></p>
-                    <p class="text-gray-400"> <b>Motor Three:</b> <span>value</span></p>
+                    <p class="text-gray-400"> <b>Motor One:</b> <span id="motor-one">_</span></p>
+                    <p class="text-gray-400"> <b>Motor Twp:</b> <span id="motor-two">_</span></p>
+                    <p class="text-gray-400"> <b>Motor Three:</b> <span id="motor-three">_</span></p>
                 </div>
             </div>
             <button class="mt-4 h-12 bg-blue-700 hover:bg-blue-600 text-gray-200 font-bold py-2 px-4 rounded">Level Scanner</button>
@@ -42,4 +42,11 @@
         <div class="w-full h-16 mt-5"></div>
     </div>
 </body>
+<script>
+    scannerWebsocket = new WebSocket("wss://scanner.local", ["scanner"]);
+    scannerWebsocket.send("some data");
+    scannerWebsocket.onmessage = (event) => {
+        console.log(event.data);
+    }
+</script>
 </html>
