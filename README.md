@@ -7,6 +7,8 @@ This project contains software and 3d files for a 3d Scanner developed for the V
 - motor one: pins [8, 9, 7, 0]
 - motor two: pins [2, 3, 12, 13]
 - motor three: pins [15, 16, 1, 4]
+- endswitch one: pins [11, 10]
+- endswitch two: pins [6, 5]
   
 ![GPI Wiring](gpioRpi.png)
 
