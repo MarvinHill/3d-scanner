@@ -37,7 +37,7 @@ func (ws *Webserver) handleWebsocket(w http.ResponseWriter, r *http.Request) {
 			log.Println("unmarshal:", err)
 			continue
 		}
-		ws.scanner.SetManualControl(&request)
+		ws.scanner.MoveByManualControl(&request)
 	}
 }
 

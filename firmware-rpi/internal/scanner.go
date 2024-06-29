@@ -2,12 +2,9 @@ package internal
 
 import (
 	"fmt"
-	"sync"
-	"time"
-
-	"gobot.io/x/gobot/v2"
 	"gobot.io/x/gobot/v2/drivers/gpio"
 	"gobot.io/x/gobot/v2/platforms/raspi"
+	"sync"
 )
 
 type ScannerDriver struct {
@@ -18,7 +15,6 @@ type ScannerDriver struct {
 	MotorOneCameraDriver *gpio.StepperDriver
 	MotorTwoCameraDriver *gpio.StepperDriver
 	manualStepAmount     int
-	ManualControl        *ManualControl
 	CurrentPosition      *Position
 	TakePhotoPosition    *Position
 	updates              chan string
@@ -31,7 +27,6 @@ func NewScannerDriver(updates chan string) *ScannerDriver {
 	s.MotorOneCameraDriver = gpio.NewStepperDriver(s.Adapter, [4]string{"13", "15", "19", "21"}, gpio.StepperModes.SinglePhaseStepping, 2048)
 	s.MotorTwoCameraDriver = gpio.NewStepperDriver(s.Adapter, [4]string{"8", "10", "12", "16"}, gpio.StepperModes.SinglePhaseStepping, 2048)
 	s.TakePhotoPosition = NewPosition(0, 0)
-	s.ManualControl = nil
 	s.manualStepAmount = 10
 	s.updates = updates
 	return s
@@ -50,45 +45,32 @@ func (s *ScannerDriver) GetLevel() bool {
 	return s.level
 }
 
-func (s *ScannerDriver) SetManualControl(control *ManualControl) {
+func (s *ScannerDriver) MoveByManualControl(control *ManualControl) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.ManualControl = control
+
+	switch control.MoveType {
+	case "camera_plus":
+		s.MotorOneCameraDriver.Move(s.manualStepAmount)
+		s.MotorTwoCameraDriver.Move(-s.manualStepAmount)
+		break
+	case "camera_minus":
+		s.MotorOneCameraDriver.Move(-s.manualStepAmount)
+		s.MotorTwoCameraDriver.Move(s.manualStepAmount)
+		break
+	case "table_plus":
+		s.MotorTableDriver.Move(s.manualStepAmount)
+		break
+	case "table_minus":
+		s.MotorTableDriver.Move(-s.manualStepAmount)
+		break
+	}
 }
 
 func (s *ScannerDriver) Run() {
 	fmt.Println("Starting Scanner")
-	work := func() {
-		gobot.Every(100*time.Millisecond, func() {
-			fmt.Println("Move")
-
-			if s.ManualControl != nil {
-				switch s.ManualControl.MoveType {
-				case "tableAxisPlus":
-					s.MotorTableDriver.Move(s.manualStepAmount)
-					return
-				case "tableAxisMinus":
-					s.MotorTableDriver.Move(-s.manualStepAmount)
-					return
-				case "cameraAxisPlus":
-					s.MotorOneCameraDriver.Move(s.manualStepAmount)
-					s.MotorTwoCameraDriver.Move(-s.manualStepAmount)
-					return
-				case "cameraAxisMinus":
-					s.MotorOneCameraDriver.Move(-s.manualStepAmount)
-					s.MotorTwoCameraDriver.Move(s.manualStepAmount)
-					return
-				}
-			}
-
-		})
-	}
-
-	robot := gobot.NewRobot("Scanner roboter",
-		[]gobot.Connection{s.Adapter},
-		[]gobot.Device{s.MotorTableDriver, s.MotorOneCameraDriver, s.MotorTwoCameraDriver},
-		work,
-	)
-
-	robot.Start()
+	s.Adapter.Connect()
+	s.MotorTableDriver.Start()
+	s.MotorOneCameraDriver.Start()
+	s.MotorTwoCameraDriver.Start()
 }

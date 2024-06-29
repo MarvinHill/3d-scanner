@@ -9,6 +9,6 @@ func main() {
 	scanner := internal.NewScannerDriver(updatesChannel)
 	webserver := internal.NewWebserver(scanner, updatesChannel)
 
-	go webserver.Run()
 	scanner.Run()
+	webserver.Run()
 }
