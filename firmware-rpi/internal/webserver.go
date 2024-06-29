@@ -31,13 +31,21 @@ func (ws *Webserver) handleWebsocket(w http.ResponseWriter, r *http.Request) {
 			log.Println("read:", err)
 			continue
 		}
-		var request ManualControl
-		err = json.Unmarshal(message, &request)
+		var mapRequest map[string]interface{}
+		err = json.Unmarshal(message, &mapRequest)
 		if err != nil {
 			log.Println("unmarshal:", err)
 			continue
 		}
-		ws.scanner.MoveByManualControl(&request)
+		if mapRequest["messageType"] == "manual" {
+			var request ManualControl
+			err = json.Unmarshal(message, &request)
+			if err != nil {
+				log.Println("unmarshal:", err)
+				continue
+			}
+			ws.scanner.MoveByManualControl(&request)
+		}
 	}
 }
 
