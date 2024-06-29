@@ -18,7 +18,7 @@ var upgrader = websocket.Upgrader{}
 
 func (ws *Webserver) Run() {
 	r := mux.NewRouter()
-	r.HandleFunc("/", ws.handleWebsocket).Schemes("wss")
+	r.HandleFunc("/conn", ws.handleWebsocket).Schemes("wss")
 }
 
 func (ws *Webserver) handleWebsocket(w http.ResponseWriter, r *http.Request) {
