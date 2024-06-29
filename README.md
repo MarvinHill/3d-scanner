@@ -7,7 +7,7 @@ This project contains software and 3d files for a 3d Scanner developed for the V
 - 3d: contains 3d files to build the scanner
 ## 3D Modells
 ## Used Hardware
-- Raspberry Pi Zero 2W
+- Raspberry Pi 1b
 - m3 screws & m3 threat inserts
 - eleego cabels
 - ELEGOO stepper motor x3 and driver board ULN2003 x3
@@ -15,15 +15,35 @@ This project contains software and 3d files for a 3d Scanner developed for the V
 - endswitch
 - power distibution hardware
 ### Pins
-- motor one: pins [8, 9, 7, 0]
-- motor two: pins [2, 3, 12, 13]
-- motor three: pins [15, 16, 1, 4]
-- endswitch one: pins [11, 10]
-- endswitch two: pins [6, 5]
+- motor one: pins           GPIO [8, 9, 7, 0]          ind [3 5 7 11]
+- motor two: pins           GPIO [2, 3, 12, 13]        ind [13 15 19 21]
+- motor three: pins         GPIO [15, 16, 1, 4]        ind [8 10 12 16]
+- endswitch one: pins       GPIO [11, 10]              ind [26 24]
+- endswitch two: pins       GPIO [6, 5]                ind [22 18]
 
 ### Driver
 The gobot driver for stepper motors was used to controll the scanner 2 axis.
 
 ## Software
+###
+Linux PI Setup:
+
+install git
+install pi-blaster (for gobot)
+
+### Gobot setup
+[issue link](https://github.com/hybridgroup/gobot/issues/691)
+### Build go
+[How To Build](https://www.digitalocean.com/community/tutorials/building-go-applications-for-different-operating-systems-and-architectures)
+
+linux: 
+command: GOOS=linux GOARCH=arm GOARM=6 go build -o scanner
+
+windows:
+(set GOOS=linux) & (set GOARCH=arm) & (set GOARM=6) & go build -o scanner
+
+### Copy to rpi
+scp scanner marvin@192.168.188.59:/tmp
+
 ### Development
 ## Result

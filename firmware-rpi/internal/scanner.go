@@ -1,6 +1,10 @@
 package internal
 
 import (
+	"fmt"
+	"time"
+
+	"gobot.io/x/gobot/v2"
 	"gobot.io/x/gobot/v2/drivers/gpio"
 	"gobot.io/x/gobot/v2/platforms/raspi"
 )
@@ -27,9 +31,9 @@ type ScannerDriver struct {
 func NewScannerDriver() *ScannerDriver {
 	s := &ScannerDriver{}
 	s.Adapter = raspi.NewAdaptor()
-	s.MotorOneDriver = gpio.NewStepperDriver(s.Adapter, [4]string{"8", "9", "7", "0"}, gpio.StepperModes.SinglePhaseStepping, 2048)
-	s.MotorTwoDriver = gpio.NewStepperDriver(s.Adapter, [4]string{"2", "3", "12", "13"}, gpio.StepperModes.SinglePhaseStepping, 2048)
-	s.MotorThreeDriver = gpio.NewStepperDriver(s.Adapter, [4]string{"15", "16", "1", "4"}, gpio.StepperModes.SinglePhaseStepping, 2048)
+	s.MotorOneDriver = gpio.NewStepperDriver(s.Adapter, [4]string{"3", "5", "7", "11"}, gpio.StepperModes.SinglePhaseStepping, 2048)
+	s.MotorTwoDriver = gpio.NewStepperDriver(s.Adapter, [4]string{"13", "15", "19", "21"}, gpio.StepperModes.SinglePhaseStepping, 2048)
+	s.MotorThreeDriver = gpio.NewStepperDriver(s.Adapter, [4]string{"8", "10", "12", "16"}, gpio.StepperModes.SinglePhaseStepping, 2048)
 
 	s.PhotoJobs = make(chan PhotoJob, 100)
 	s.JobResultChannel = make(chan []byte)
@@ -42,8 +46,23 @@ func (s *ScannerDriver) LevelSites() {
 }
 
 func (s *ScannerDriver) Run() {
-	for true {
-		//Check if there are jobs in the queue
+	fmt.Println("Starting Scanner")
+	work := func() {
+
+		gobot.Every(1*time.Second, func() {
+			fmt.Println("Move")
+			s.MotorOneDriver.MoveDeg(30)
+			s.MotorTwoDriver.MoveDeg(30)
+			s.MotorThreeDriver.MoveDeg(30)
+		})
 	}
+
+	robot := gobot.NewRobot("Scanner roboter",
+		[]gobot.Connection{s.Adapter},
+		[]gobot.Device{s.MotorOneDriver, s.MotorTwoDriver, s.MotorThreeDriver},
+		work,
+	)
+
+	robot.Start()
 
 }

@@ -2,16 +2,15 @@ package main
 
 import (
 	"github.com/MarvinHill/3d-scanner/internal"
-	"runtime"
 )
 
 func main() {
 
-	webserver := internal.Webserver{}
-	scanner := internal.ScannerDriver{}
+	//webserver := internal.Webserver{}
+	scanner := internal.NewScannerDriver()
 
-	go scanner.Run()
-	go webserver.Run()
+	scanner.Run()
+	//go webserver.Run()
 
-	runtime.Goexit()
+	//runtime.Goexit()
 }
