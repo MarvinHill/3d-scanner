@@ -5,12 +5,10 @@ import (
 )
 
 func main() {
+	updatesChannel := make(chan string)
+	scanner := internal.NewScannerDriver(updatesChannel)
+	webserver := internal.NewWebserver(scanner, updatesChannel)
 
-	//webserver := internal.Webserver{}
-	scanner := internal.NewScannerDriver()
-
+	go webserver.Run()
 	scanner.Run()
-	//go webserver.Run()
-
-	//runtime.Goexit()
 }
