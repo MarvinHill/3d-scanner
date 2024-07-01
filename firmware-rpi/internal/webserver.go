@@ -2,23 +2,26 @@ package internal
 
 import (
 	"encoding/json"
-	"github.com/gorilla/mux"
-	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 )
 
 type Webserver struct {
-	scanner         *ScannerDriver
-	websConnections []*websocket.Conn
-	updates         chan string
+	scannerController *ScannerController
+	websConnections   []*websocket.Conn
+	fileHandler       http.Handler
 }
 
 var upgrader = websocket.Upgrader{}
 
 func (ws *Webserver) Run() {
 	r := mux.NewRouter()
-	r.HandleFunc("/conn", ws.handleWebsocket).Schemes("wss")
+	r.HandleFunc("/conn", ws.handleWebsocket).Schemes("ws")
+	r.Handle("/", ws.fileHandler)
+	http.ListenAndServe(":8080", r)
 }
 
 func (ws *Webserver) handleWebsocket(w http.ResponseWriter, r *http.Request) {
@@ -37,21 +40,26 @@ func (ws *Webserver) handleWebsocket(w http.ResponseWriter, r *http.Request) {
 			log.Println("unmarshal:", err)
 			continue
 		}
-		if mapRequest["messageType"] == "manual" {
-			var request ManualControl
+		switch mapRequest["messageType"] {
+		case "ManualControl":
+			var request ManualControlMessage
 			err = json.Unmarshal(message, &request)
 			if err != nil {
 				log.Println("unmarshal:", err)
 				continue
 			}
-			ws.scanner.MoveByManualControl(&request)
+			ws.scannerController.MoveByManualControl(&request)
+			break
+		case "PhotoRequest":
+			// implement
+			break
 		}
 	}
 }
 
-func NewWebserver(scanner *ScannerDriver, updatesChannel chan string) *Webserver {
+func NewWebserver(scannerController *ScannerController, fileHandler http.Handler) *Webserver {
 	w := &Webserver{}
-	w.scanner = scanner
-	w.updates = updatesChannel
+	w.scannerController = scannerController
+	w.fileHandler = fileHandler
 	return w
 }

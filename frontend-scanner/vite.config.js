@@ -19,7 +19,7 @@ export default {
         }
       },
       // Directory where Vite will output the built files
-      outDir: 'dist',
+      outDir: './../firmware-rpi/cmd/resources',
       // Ensure that the assets are placed in the same directory
       assetsDir: '.'
     }

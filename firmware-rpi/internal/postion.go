@@ -1,8 +1,10 @@
 package internal
 
+var MaxRotationOnTableAxis = 360
+
 func NewPosition(cameraAxis int, tableAxis int) *Position {
 	inputCameraAxis := cameraAxis
-	inputTableAxis := tableAxis % 360
+	inputTableAxis := tableAxis % MaxRotationOnTableAxis
 
 	if inputCameraAxis < 0 {
 		inputCameraAxis = 0
@@ -12,6 +14,13 @@ func NewPosition(cameraAxis int, tableAxis int) *Position {
 	}
 
 	return &Position{CameraAxis: inputCameraAxis, TableAxis: inputTableAxis}
+}
+
+func AddMovementToPosition(position *Position, movement *Position) *Position {
+	cameraAxis := position.CameraAxis + movement.CameraAxis
+	tableAxis := (position.TableAxis + movement.TableAxis) % MaxRotationOnTableAxis
+
+	return NewPosition(cameraAxis, tableAxis)
 }
 
 type Position struct {
