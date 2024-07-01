@@ -9,60 +9,64 @@ import (
 
 type ScannerDriver struct {
 	mu                   sync.Mutex
-	level                bool
 	Adapter              *raspi.Adaptor
 	MotorTableDriver     *gpio.StepperDriver
 	MotorOneCameraDriver *gpio.StepperDriver
 	MotorTwoCameraDriver *gpio.StepperDriver
 	manualStepAmount     int
 	CurrentPosition      *Position
-	TakePhotoPosition    *Position
-	updates              chan string
 }
 
-func NewScannerDriver(updates chan string) *ScannerDriver {
+func NewScannerDriver() *ScannerDriver {
 	s := &ScannerDriver{}
 	s.Adapter = raspi.NewAdaptor()
 	s.MotorTableDriver = gpio.NewStepperDriver(s.Adapter, [4]string{"3", "5", "7", "11"}, gpio.StepperModes.SinglePhaseStepping, 2048)
 	s.MotorOneCameraDriver = gpio.NewStepperDriver(s.Adapter, [4]string{"13", "15", "19", "21"}, gpio.StepperModes.SinglePhaseStepping, 2048)
 	s.MotorTwoCameraDriver = gpio.NewStepperDriver(s.Adapter, [4]string{"8", "10", "12", "16"}, gpio.StepperModes.SinglePhaseStepping, 2048)
-	s.TakePhotoPosition = NewPosition(0, 0)
 	s.manualStepAmount = 10
-	s.updates = updates
 	return s
 }
 
 func (s *ScannerDriver) LevelSites() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.level = true
+	// Implement
 	s.CurrentPosition = NewPosition(0, 0)
 }
 
-func (s *ScannerDriver) GetLevel() bool {
+func (s *ScannerDriver) TakePhoto(request *PhotoRequest) Photo {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	return s.level
+
+	// s.moveToPostion()
+	// s.takePhoto()
+
+	// Implement
+	return Photo{}
 }
 
-func (s *ScannerDriver) MoveByManualControl(control *ManualControl) {
+func (s *ScannerDriver) MoveByManualControl(control *ManualControlMessage) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	switch control.MoveType {
-	case "camera_plus":
-		s.MotorOneCameraDriver.Move(s.manualStepAmount)
-		s.MotorTwoCameraDriver.Move(-s.manualStepAmount)
+	case "c_pl":
+		s.MotorOneCameraDriver.MoveDeg(s.manualStepAmount * 2)
+		s.MotorTwoCameraDriver.MoveDeg(-s.manualStepAmount * 2)
+		s.CurrentPosition = AddMovementToPosition(s.CurrentPosition, NewPosition(s.manualStepAmount*2, 0))
 		break
-	case "camera_minus":
-		s.MotorOneCameraDriver.Move(-s.manualStepAmount)
-		s.MotorTwoCameraDriver.Move(s.manualStepAmount)
+	case "c_min":
+		s.MotorOneCameraDriver.MoveDeg(-s.manualStepAmount * 2)
+		s.MotorTwoCameraDriver.MoveDeg(s.manualStepAmount * 2)
+		s.CurrentPosition = AddMovementToPosition(s.CurrentPosition, NewPosition(-s.manualStepAmount*2, 0))
 		break
-	case "table_plus":
-		s.MotorTableDriver.Move(s.manualStepAmount)
+	case "tb_pl":
+		s.MotorTableDriver.MoveDeg(s.manualStepAmount)
+		s.CurrentPosition = AddMovementToPosition(s.CurrentPosition, NewPosition(0, s.manualStepAmount))
 		break
-	case "table_minus":
-		s.MotorTableDriver.Move(-s.manualStepAmount)
+	case "tb_min":
+		s.MotorTableDriver.MoveDeg(-s.manualStepAmount)
+		s.CurrentPosition = AddMovementToPosition(s.CurrentPosition, NewPosition(0, -s.manualStepAmount))
 		break
 	}
 }
@@ -73,4 +77,20 @@ func (s *ScannerDriver) Run() {
 	s.MotorTableDriver.Start()
 	s.MotorOneCameraDriver.Start()
 	s.MotorTwoCameraDriver.Start()
+
+	// Reset Table Motor Output Pins
+	s.Adapter.DigitalWrite("3", 0)
+	s.Adapter.DigitalWrite("5", 0)
+	s.Adapter.DigitalWrite("7", 0)
+	s.Adapter.DigitalWrite("11", 0)
+	// Reset Camera Motor Output Pins
+	s.Adapter.DigitalWrite("13", 0)
+	s.Adapter.DigitalWrite("15", 0)
+	s.Adapter.DigitalWrite("19", 0)
+	s.Adapter.DigitalWrite("21", 0)
+	s.Adapter.DigitalWrite("8", 0)
+	s.Adapter.DigitalWrite("10", 0)
+	s.Adapter.DigitalWrite("12", 0)
+	s.Adapter.DigitalWrite("16", 0)
+
 }

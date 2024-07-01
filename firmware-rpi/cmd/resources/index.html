@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  <link rel="stylesheet" crossorigin href="/index.css">
+</head>
+<body class="bg-gray-700">
+    
+    <div class="relative flex flex-col justify-center items-center w-full min-h-screen">
+        <div class="flex justify-center pb-4">
+            <h1 class="text-3xl font-bold my-4 text-gray-100">Scanner Controller</h1>
+        </div>
+        <div class="flex flex-col items-center">
+            <div class="flex flex-col sm:flex-row gap-2">
+                <div class="flex flex-col justify-center items-center mt-4 bg-gray-600 min-w-44 rounded-xl p-4">
+                    <h2 class="font-bold text-xl mb-3 text-cente text-gray-200 h-16">Camera Axis</h2>
+                    <button class="m-2 size-12 bg-slate-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded">+</button>
+                    <button class="m-2 size-12 bg-slate-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded">-</button>
+                </div>
+                <div class="flex flex-col justify-center items-center mt-4 bg-gray-600 min-w-44 rounded-xl p-4">
+                    <h2 class="font-bold text-xl mb-3 text-cente text-gray-200 h-16">Table Axis</h2>
+                    <button class="m-2 size-12 bg-slate-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded">+</button>
+                    <button class="m-2 size-12 bg-slate-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded">-</button>
+                </div>
+            </div>
+            <button class="mt-4 h-12 bg-blue-700 hover:bg-blue-600 text-gray-200 font-bold py-2 px-4 rounded">Level Scanner</button>
+            <button class="mt-4 h-12 bg-green-700 hover:bg-green-600 text-gray-200 font-bold py-2 px-4 rounded">Start Scanning</button>
+        </div>
+        <div class="flex h-16 flex-col justify-center items-center fixed p-2 bottom-0 w-full text-center">
+            <div class="size-full  rounded-xl p-2 bg-gray-800">
+                <p class="font-bold text-xl text-gray-200">Status: <span class="text-green-500 uppercase">moving</span></p>
+            </div>
+        </div>
+        <div class="w-full h-16 mt-5"></div>
+    </div>
+</body>
+<script>
+    
+    class ScanJobMessage  {
+        messageType
+        photoRequests
+    }
+
+    class PhotoRequest {
+        angleCameraAxis
+        angleTableAxis
+    }
+
+    class ManualControlMessage {
+        messageType
+        moveType
+    }
+
+    function cameraAxisPlus() {
+        console.log("camera axis plus")
+        scannerWebsocket.send(JSON.stringify(new ManualControlMessage("ManualControl", "c_pl")))
+    }
+
+    function cameraAxisMinus() {
+        console.log("camera axis minus")
+        scannerWebsocket.send(JSON.stringify(new ManualControlMessage("ManualControl", "c_min")))
+    }
+
+    function tableAxisPlus() {
+        console.log("table axis plus")
+        scannerWebsocket.send(JSON.stringify(new ManualControlMessage("ManualControl", "tb_pl")))
+    }
+
+    function tableAxisMinus() {
+        console.log("table axis minus")
+        scannerWebsocket.send(JSON.stringify(new ManualControlMessage("ManualControl", "tb_min")))
+    }
+
+    scannerWebsocket = new WebSocket("ws://192.168.188.59:8080/conn");
+    scannerWebsocket.send("some data");
+    scannerWebsocket.onmessage = (event) => {
+        console.log(event.data);
+    }
+</script>
+</html>
