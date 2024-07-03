@@ -5,29 +5,29 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 )
 
 type Webserver struct {
 	scannerController *ScannerController
-	websConnections   []*websocket.Conn
-	fileHandler       http.Handler
 }
 
-var upgrader = websocket.Upgrader{}
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
 
 func (ws *Webserver) Run() {
-	r := mux.NewRouter()
-	r.HandleFunc("/conn", ws.handleWebsocket).Schemes("ws")
-	r.Handle("/", ws.fileHandler)
-	http.ListenAndServe(":8080", r)
+	http.HandleFunc("/", handleWebsocket)
+	http.ListenAndServe(":8080", nil)
 }
 
-func (ws *Webserver) handleWebsocket(w http.ResponseWriter, r *http.Request) {
+func handleWebsocket(w http.ResponseWriter, r *http.Request) {
+	log.Println("Websocket connection started")
 	conn, _ := upgrader.Upgrade(w, r, nil)
-	ws.websConnections = append(ws.websConnections, conn)
 	defer conn.Close()
+
 	for {
 		_, message, err := conn.ReadMessage()
 		if err != nil {
@@ -48,7 +48,6 @@ func (ws *Webserver) handleWebsocket(w http.ResponseWriter, r *http.Request) {
 				log.Println("unmarshal:", err)
 				continue
 			}
-			ws.scannerController.MoveByManualControl(&request)
 			break
 		case "PhotoRequest":
 			// implement
@@ -57,9 +56,8 @@ func (ws *Webserver) handleWebsocket(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func NewWebserver(scannerController *ScannerController, fileHandler http.Handler) *Webserver {
+func NewWebserver(scannerController *ScannerController) *Webserver {
 	w := &Webserver{}
 	w.scannerController = scannerController
-	w.fileHandler = fileHandler
 	return w
 }

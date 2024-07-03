@@ -37,10 +37,10 @@ install pi-blaster (for gobot)
 [How To Build](https://www.digitalocean.com/community/tutorials/building-go-applications-for-different-operating-systems-and-architectures)
 
 linux: 
-command: GOOS=linux GOARCH=arm GOARM=6 go build -o scanner
+command: GOOS=linux GOARCH=arm GOARM=6 go build -o ./build/scanner
 
 windows:
-(set GOOS=linux) & (set GOARCH=arm) & (set GOARM=6) & go build -o scanner
+(set GOOS=linux) & (set GOARCH=arm) & (set GOARM=6) & go build -o ./build/scanner
 
 ### Copy to rpi
 scp scanner marvin@192.168.188.59:/tmp

@@ -73,7 +73,7 @@
         scannerWebsocket.send(JSON.stringify(new ManualControlMessage("ManualControl", "tb_min")))
     }
 
-    scannerWebsocket = new WebSocket("ws://192.168.188.59:8080/conn");
+    scannerWebsocket = new WebSocket("ws://192.168.188.59/conn");
     scannerWebsocket.send("some data");
     scannerWebsocket.onmessage = (event) => {
         console.log(event.data);

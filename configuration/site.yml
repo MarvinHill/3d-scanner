@@ -1,7 +1,4 @@
 ---
 - hosts: rpi  
   roles:
-    - caddy
-    - scanner
-    - static_files
-    - wlan
+    - golang

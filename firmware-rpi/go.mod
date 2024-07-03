@@ -3,7 +3,6 @@ module github.com/MarvinHill/3d-scanner
 go 1.22
 
 require (
-	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/websocket v1.5.1
 	gobot.io/x/gobot/v2 v2.3.0
 )

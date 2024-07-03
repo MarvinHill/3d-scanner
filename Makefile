@@ -1,10 +1,8 @@
-DEST_IP = 192.168.188.59
-build:
+frontend:
 	cd frontend-scanner; npm install; npm run build
-	cd firmware-rpi/cmd; GOOS=linux GOARCH=arm GOARM=6 go build -o scanner
-deploy:
-	scp ./firmware-rpi/cmd/scanner marvin@${DEST_IP}:/tmp
-doAll: build deploy
+firmware:
+	cd firmware-rpi/cmd; go get .; GOOS=linux GOARCH=arm GOARM=6 go build -o ./build/scanner
+build: frontend firmware
 clean:
 	rm ./firmware-rpi/cmd/scanner
 	rm ./firmware-rpi/cmd/resources/*
