@@ -42,16 +42,19 @@ func handleWebsocket(w http.ResponseWriter, r *http.Request) {
 		}
 		switch mapRequest["messageType"] {
 		case "ManualControl":
-			var request ManualControlMessage
-			err = json.Unmarshal(message, &request)
-			if err != nil {
-				log.Println("unmarshal:", err)
-				continue
+			switch mapRequest["messageType"] {
+			case "ManualControl":
+				var request ManualControlMessage
+				err = json.Unmarshal(message, &request)
+				if err != nil {
+					log.Println("unmarshal:", err)
+					continue
+				}
+				break
+			case "PhotoRequest":
+				// implement
+				break
 			}
-			break
-		case "PhotoRequest":
-			// implement
-			break
 		}
 	}
 }
