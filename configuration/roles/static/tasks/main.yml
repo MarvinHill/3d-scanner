@@ -1,0 +1,15 @@
+---
+
+- name: Creates directory for www content
+  ansible.builtin.file:
+    path: /var/www/html
+    state: directory
+
+- name: Copy CSS file to remote system
+  copy:
+    src: ./../build/index.css
+    dest: /var/www/html/index.css
+- name: Copy CSS file to remote system
+  copy:
+    src: ./../build/index.html
+    dest: /var/www/html/index.html

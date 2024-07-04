@@ -1,4 +1,4 @@
-localhost:80 {
+scanner.local {
     root * /var/www/html
     file_server
     
