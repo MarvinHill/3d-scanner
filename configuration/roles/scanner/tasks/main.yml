@@ -1,7 +1,6 @@
 ---
 - name: Copy file to remote system
   copy:
-    src: ../firmware-rpi/cmd/scanner
-    dest: /tmp/scanner
+    src: ./../build/scanner
+    dest: /var/app/scanner
     mode: '0755'
-    

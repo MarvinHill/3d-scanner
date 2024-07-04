@@ -1,0 +1,16 @@
+localhost:80 {
+    root * /var/www/html
+    file_server
+    
+    header {
+        Access-Control-Allow-Origin https://scanner.local
+        Access-Control-Allow-Methods "GET, POST, OPTIONS, HEAD, PATCH, PUT, DELETE"
+        Access-Control-Allow-Headers "User-Agent, Content-Type, X-Api-Key"
+        Access-Control-Max-Age 86400
+    }
+
+    route /scanner* {
+        reverse_proxy localhost:8082
+    }
+}
+

@@ -2,9 +2,10 @@ package internal
 
 import (
 	"fmt"
+	"sync"
+
 	"gobot.io/x/gobot/v2/drivers/gpio"
 	"gobot.io/x/gobot/v2/platforms/raspi"
-	"sync"
 )
 
 type ScannerDriver struct {
@@ -14,7 +15,7 @@ type ScannerDriver struct {
 	MotorOneCameraDriver *gpio.StepperDriver
 	MotorTwoCameraDriver *gpio.StepperDriver
 	manualStepAmount     int
-	CurrentPosition      *Position
+	CurrentPosition      Position
 }
 
 func NewScannerDriver() *ScannerDriver {
@@ -34,7 +35,7 @@ func (s *ScannerDriver) LevelSites() {
 	s.CurrentPosition = NewPosition(0, 0)
 }
 
-func (s *ScannerDriver) TakePhoto(request *PhotoRequest) Photo {
+func (s *ScannerDriver) TakePhoto(request PhotoRequest) Photo {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -45,28 +46,40 @@ func (s *ScannerDriver) TakePhoto(request *PhotoRequest) Photo {
 	return Photo{}
 }
 
-func (s *ScannerDriver) MoveByManualControl(control *ManualControlMessage) {
+func (s *ScannerDriver) MoveByManualControl(movement string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	switch control.MoveType {
+	fmt.Println("Moving by manual control")
+
+	switch movement {
 	case "c_pl":
+		fmt.Println("Moving camera axis 1")
 		s.MotorOneCameraDriver.MoveDeg(s.manualStepAmount * 2)
+		fmt.Println("Moving camera axis 2")
 		s.MotorTwoCameraDriver.MoveDeg(-s.manualStepAmount * 2)
-		s.CurrentPosition = AddMovementToPosition(s.CurrentPosition, NewPosition(s.manualStepAmount*2, 0))
+		s.CurrentPosition = AddMovementToPosition(s.CurrentPosition, NewPosition(s.manualStepAmount, 0))
+		s.CurrentPosition.Print()
 		break
 	case "c_min":
+		fmt.Println("Moving camera axis 1")
 		s.MotorOneCameraDriver.MoveDeg(-s.manualStepAmount * 2)
+		fmt.Println("Moving camera axis 2")
 		s.MotorTwoCameraDriver.MoveDeg(s.manualStepAmount * 2)
-		s.CurrentPosition = AddMovementToPosition(s.CurrentPosition, NewPosition(-s.manualStepAmount*2, 0))
+		s.CurrentPosition = AddMovementToPosition(s.CurrentPosition, NewPosition(-s.manualStepAmount, 0))
+		s.CurrentPosition.Print()
 		break
 	case "tb_pl":
+		fmt.Println("Moving table")
 		s.MotorTableDriver.MoveDeg(s.manualStepAmount)
 		s.CurrentPosition = AddMovementToPosition(s.CurrentPosition, NewPosition(0, s.manualStepAmount))
+		s.CurrentPosition.Print()
 		break
 	case "tb_min":
+		fmt.Println("Moving table")
 		s.MotorTableDriver.MoveDeg(-s.manualStepAmount)
 		s.CurrentPosition = AddMovementToPosition(s.CurrentPosition, NewPosition(0, -s.manualStepAmount))
+		s.CurrentPosition.Print()
 		break
 	}
 }

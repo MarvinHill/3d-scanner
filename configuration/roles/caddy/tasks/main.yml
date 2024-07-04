@@ -1,0 +1,57 @@
+---
+    
+- name: Check if debian-keyring is present
+  apt:
+      name: debian-keyring
+      state: latest
+      update_cache: yes
+
+- name: Check if debian-archive-keyring is present
+  apt:
+      name: debian-archive-keyring
+      state: latest
+      update_cache: yes
+
+- name: Check if apt-transport-https is present
+  apt:
+      name: apt-transport-https
+      state: latest
+      update_cache: yes
+
+- name: Check if curl is present
+  apt:
+      name: curl
+      state: latest
+      update_cache: yes
+
+- name: Check that the gpg.conf exists
+  stat:
+    path: /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+  register: gpt_result
+
+- name: Some caddy setup 1
+  shell: curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+  when: gpt_result.stat.exists == False
+
+- name: Check that the caddy-stable.list exists
+  stat:
+    path: /etc/apt/sources.list.d/caddy-stable.list
+  register: caddy_list_result
+
+- name: Some caddy setup 2
+  shell: curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+  when: caddy_list_result.stat.exists == False
+
+- name: Install Caddy
+  apt:
+      name: caddy
+      state: latest
+      update_cache: yes
+
+- name: Copy Caddyfile to remote system
+  copy:
+    src: Caddyfile
+    dest: /etc/caddy/Caddyfile
+
+- name: Enable and start Caddy service
+  shell: caddy reload --config /etc/caddy/Caddyfile

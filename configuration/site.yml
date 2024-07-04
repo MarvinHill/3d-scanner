@@ -1,4 +1,6 @@
 ---
 - hosts: rpi  
+  become: true
   roles:
-    - golang
+    - static
+    - caddy

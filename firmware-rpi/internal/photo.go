@@ -12,6 +12,6 @@ type PhotoRequest struct {
 	AngleTableAxis  int `json:"angleTableAxis"`
 }
 
-func (pr *PhotoRequest) ToPosition() *Position {
+func (pr *PhotoRequest) ToPosition() Position {
 	return NewPosition(pr.AngleCameraAxis, pr.AngleTableAxis)
 }

@@ -42,6 +42,10 @@ command: GOOS=linux GOARCH=arm GOARM=6 go build -o ./build/scanner
 windows:
 (set GOOS=linux) & (set GOARCH=arm) & (set GOARM=6) & go build -o ./build/scanner
 
+
+- run docker compose to build the artifacts
+- then run the ansible playbook
+
 ### Copy to rpi
 scp scanner marvin@192.168.188.59:/tmp
 

@@ -1,8 +1,10 @@
 package internal
 
+import "fmt"
+
 var MaxRotationOnTableAxis = 360
 
-func NewPosition(cameraAxis int, tableAxis int) *Position {
+func NewPosition(cameraAxis int, tableAxis int) Position {
 	inputCameraAxis := cameraAxis
 	inputTableAxis := tableAxis % MaxRotationOnTableAxis
 
@@ -13,10 +15,11 @@ func NewPosition(cameraAxis int, tableAxis int) *Position {
 		inputCameraAxis = 90
 	}
 
-	return &Position{CameraAxis: inputCameraAxis, TableAxis: inputTableAxis}
+	return Position{CameraAxis: inputCameraAxis, TableAxis: inputTableAxis}
 }
 
-func AddMovementToPosition(position *Position, movement *Position) *Position {
+func AddMovementToPosition(position Position, movement Position) Position {
+	fmt.Println("Adding movement to position")
 	cameraAxis := position.CameraAxis + movement.CameraAxis
 	tableAxis := (position.TableAxis + movement.TableAxis) % MaxRotationOnTableAxis
 
@@ -26,4 +29,8 @@ func AddMovementToPosition(position *Position, movement *Position) *Position {
 type Position struct {
 	CameraAxis int
 	TableAxis  int
+}
+
+func (pos *Position) Print() {
+	fmt.Println("Postion CameraAxis: ", pos.CameraAxis, " TableAxis: ", pos.TableAxis)
 }
