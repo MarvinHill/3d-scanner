@@ -16,13 +16,13 @@
             <div class="flex flex-col sm:flex-row gap-2">
                 <div class="flex flex-col justify-center items-center mt-4 bg-gray-600 min-w-44 rounded-xl p-4">
                     <h2 class="font-bold text-xl mb-3 text-cente text-gray-200 h-16">Camera Axis</h2>
-                    <button class="m-2 size-12 bg-slate-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded">+</button>
-                    <button class="m-2 size-12 bg-slate-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded">-</button>
+                    <button id="cameraPlus" class="m-2 size-12 bg-slate-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded">+</button>
+                    <button id="cameraMinus" class="m-2 size-12 bg-slate-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded">-</button>
                 </div>
                 <div class="flex flex-col justify-center items-center mt-4 bg-gray-600 min-w-44 rounded-xl p-4">
                     <h2 class="font-bold text-xl mb-3 text-cente text-gray-200 h-16">Table Axis</h2>
-                    <button class="m-2 size-12 bg-slate-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded">+</button>
-                    <button class="m-2 size-12 bg-slate-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded">-</button>
+                    <button id="tablePlus" class="m-2 size-12 bg-slate-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded">+</button>
+                    <button id="tableMinus" class="m-2 size-12 bg-slate-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded">-</button>
                 </div>
             </div>
             <button class="mt-4 h-12 bg-blue-700 hover:bg-blue-600 text-gray-200 font-bold py-2 px-4 rounded">Level Scanner</button>
@@ -37,46 +37,69 @@
     </div>
 </body>
 <script>
-    
-    class ScanJobMessage  {
-        messageType
-        photoRequests
-    }
 
-    class PhotoRequest {
-        angleCameraAxis
-        angleTableAxis
-    }
+    let interval = null;
 
-    class ManualControlMessage {
-        messageType
-        moveType
+
+    function clearInter() {
+        if(interval){
+            clearInterval(interval);
+            interval = null;
+        }
     }
 
     function cameraAxisPlus() {
-        console.log("camera axis plus")
-        scannerWebsocket.send(JSON.stringify(new ManualControlMessage("ManualControl", "c_pl")))
+        interval = setInterval(async () => {
+            await fetch("https://api.scanner.local/cameraAxisPlus")
+            console.log("camera axis plus")
+        }, 500);
     }
-
+    
     function cameraAxisMinus() {
-        console.log("camera axis minus")
-        scannerWebsocket.send(JSON.stringify(new ManualControlMessage("ManualControl", "c_min")))
+        interval = setInterval(async () => {
+            await fetch("https://api.scanner.local/cameraAxisMinus")
+            console.log("camera axis minus")
+        }, 500);
     }
 
     function tableAxisPlus() {
-        console.log("table axis plus")
-        scannerWebsocket.send(JSON.stringify(new ManualControlMessage("ManualControl", "tb_pl")))
+        interval = setInterval(async () => {
+            await fetch("https://api.scanner.local/tableAxisPlus")
+            console.log("table axis plus")
+        }, 500);
     }
 
     function tableAxisMinus() {
-        console.log("table axis minus")
-        scannerWebsocket.send(JSON.stringify(new ManualControlMessage("ManualControl", "tb_min")))
+        interval = setInterval(async () => {
+            await fetch("https://api.scanner.local/tableAxisMinus")
+            console.log("table axis minus")
+        }, 500);
     }
 
-    scannerWebsocket = new WebSocket("ws://192.168.188.59:8080/conn");
-    scannerWebsocket.send("some data");
-    scannerWebsocket.onmessage = (event) => {
-        console.log(event.data);
+    async function levelScanner() {
+        await ("https://api.scanner.local/levelScanner")
+        console.log("level scanner")
     }
+
+    document.querySelector("#cameraPlus").addEventListener("mousedown", cameraAxisPlus)
+    document.querySelector("#cameraPlus").addEventListener("mouseup", clearInter)
+    document.querySelector("#cameraPlus").addEventListener("touchdown", cameraAxisPlus)
+    document.querySelector("#cameraPlus").addEventListener("touchup", clearInter)
+
+    document.querySelector("#cameraMinus").addEventListener("mousedown", cameraAxisMinus)
+    document.querySelector("#cameraMinus").addEventListener("mouseup", clearInter)
+    document.querySelector("#cameraMinus").addEventListener("touchdown", cameraAxisMinus)
+    document.querySelector("#cameraMinus").addEventListener("touchup", clearInter)
+
+    document.querySelector("#tablePlus").addEventListener("mousedown", tableAxisPlus)
+    document.querySelector("#tablePlus").addEventListener("mouseup", clearInter)
+    document.querySelector("#tablePlus").addEventListener("touchdown", tableAxisPlus)
+    document.querySelector("#tablePlus").addEventListener("touchup", clearInter)
+
+    document.querySelector("#tableMinus").addEventListener("mousedown", tableAxisMinus)
+    document.querySelector("#tableMinus").addEventListener("mouseup", clearInter)
+    document.querySelector("#tableMinus").addEventListener("touchdown", tableAxisMinus)
+    document.querySelector("#tableMinus").addEventListener("touchup", clearInter)
+
 </script>
 </html>
