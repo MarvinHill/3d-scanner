@@ -1,4 +1,9 @@
 ---
+- name: Creates directory for scanner firmware
+  ansible.builtin.file:
+    path: /var/app/
+    state: directory
+    
 - name: Copy file to remote system
   copy:
     src: ./../build/scanner

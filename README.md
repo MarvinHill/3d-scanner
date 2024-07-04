@@ -44,7 +44,7 @@ windows:
 
 
 - run docker compose to build the artifacts
-- then run the ansible playbook
+- then run the ansible playbook `ansible-playbook -i production site.yml`
 
 ### Copy to rpi
 scp scanner marvin@192.168.188.59:/tmp
