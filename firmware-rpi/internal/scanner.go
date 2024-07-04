@@ -31,7 +31,47 @@ func NewScannerDriver() *ScannerDriver {
 func (s *ScannerDriver) LevelSites() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	// Implement
+
+	// todo check if already level
+	oneLevel := false
+	twoLevel := false
+
+	for oneLevel == false || twoLevel == false {
+
+		// check level of axis motors
+
+		if oneLevel == false {
+			oneFirstCheck, _ := s.Adapter.DigitalRead("36")
+			if oneFirstCheck == 1 {
+				oneLevel = true
+			} else {
+				// move down
+				fmt.Println("Moving camera axis 1")
+				s.MotorOneCameraDriver.Move(4)
+				oneSecondCheck, _ := s.Adapter.DigitalRead("36")
+				if oneSecondCheck == 1 {
+					oneLevel = true
+				}
+			}
+
+		}
+
+		if twoLevel == false {
+			twoFirstCheck, _ := s.Adapter.DigitalRead("38")
+			if twoFirstCheck == 1 {
+				twoLevel = true
+			} else {
+				// move down
+				fmt.Println("Moving camera axis 2")
+				s.MotorTwoCameraDriver.Move(4)
+				twoSecondCheck, _ := s.Adapter.DigitalRead("38")
+				if twoSecondCheck == 1 {
+					twoLevel = true
+				}
+			}
+		}
+
+	}
 	s.CurrentPosition = NewPosition(0, 0)
 }
 
@@ -39,10 +79,21 @@ func (s *ScannerDriver) TakePhoto(request PhotoRequest) Photo {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	// s.moveToPostion()
+	requestedPos := request.ToPosition()
+
+	tableAxisDiff := requestedPos.TableAxis - s.CurrentPosition.TableAxis // invert because of stepper motor mounting direction
+	cameraAxisDiff := requestedPos.CameraAxis - s.CurrentPosition.CameraAxis
+
+	fmt.Println("Moving camera axis 1")
+	s.MotorOneCameraDriver.MoveDeg(-cameraAxisDiff * 2)
+	fmt.Println("Moving camera axis 2")
+	s.MotorTwoCameraDriver.MoveDeg(-cameraAxisDiff * 2)
+	fmt.Println("Moving table")
+	s.MotorTableDriver.MoveDeg(tableAxisDiff)
+	s.CurrentPosition = AddMovementToPosition(s.CurrentPosition, NewPosition(cameraAxisDiff, tableAxisDiff))
+
 	// s.takePhoto()
 
-	// Implement
 	return Photo{}
 }
 
@@ -54,20 +105,28 @@ func (s *ScannerDriver) MoveByManualControl(movement string) {
 
 	switch movement {
 	case "c_pl":
-		fmt.Println("Moving camera axis 1")
-		s.MotorOneCameraDriver.MoveDeg(s.manualStepAmount * 2)
-		fmt.Println("Moving camera axis 2")
-		s.MotorTwoCameraDriver.MoveDeg(-s.manualStepAmount * 2)
+		prevPos := s.CurrentPosition
 		s.CurrentPosition = AddMovementToPosition(s.CurrentPosition, NewPosition(s.manualStepAmount, 0))
 		s.CurrentPosition.Print()
-		break
-	case "c_min":
+		if prevPos.Equals(s.CurrentPosition) {
+			break
+		}
 		fmt.Println("Moving camera axis 1")
 		s.MotorOneCameraDriver.MoveDeg(-s.manualStepAmount * 2)
 		fmt.Println("Moving camera axis 2")
-		s.MotorTwoCameraDriver.MoveDeg(s.manualStepAmount * 2)
+		s.MotorTwoCameraDriver.MoveDeg(-s.manualStepAmount * 2)
+		break
+	case "c_min":
+		prevPos := s.CurrentPosition
 		s.CurrentPosition = AddMovementToPosition(s.CurrentPosition, NewPosition(-s.manualStepAmount, 0))
 		s.CurrentPosition.Print()
+		if prevPos.Equals(s.CurrentPosition) {
+			break
+		}
+		fmt.Println("Moving camera axis 1")
+		s.MotorOneCameraDriver.MoveDeg(s.manualStepAmount * 2)
+		fmt.Println("Moving camera axis 2")
+		s.MotorTwoCameraDriver.MoveDeg(s.manualStepAmount * 2)
 		break
 	case "tb_pl":
 		fmt.Println("Moving table")
@@ -106,4 +165,8 @@ func (s *ScannerDriver) Run() {
 	s.Adapter.DigitalWrite("12", 0)
 	s.Adapter.DigitalWrite("16", 0)
 
+	// Sensor 1
+	s.Adapter.DigitalWrite("35", 1)
+	// Sensor 2
+	s.Adapter.DigitalWrite("37", 1)
 }

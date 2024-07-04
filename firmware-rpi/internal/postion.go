@@ -26,6 +26,10 @@ func AddMovementToPosition(position Position, movement Position) Position {
 	return NewPosition(cameraAxis, tableAxis)
 }
 
+func (p1 *Position) Equals(p2 Position) bool {
+	return p1.CameraAxis == p2.CameraAxis && p1.TableAxis == p2.TableAxis
+}
+
 type Position struct {
 	CameraAxis int
 	TableAxis  int

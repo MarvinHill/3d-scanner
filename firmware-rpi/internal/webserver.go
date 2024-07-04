@@ -21,6 +21,7 @@ func (ws *Webserver) Run() {
 	http.HandleFunc("/cameraAxisMinus", ws.cameraAxisMinus)
 	http.HandleFunc("/tableAxisPlus", ws.tableAxisPlus)
 	http.HandleFunc("/tableAxisMinus", ws.tableAxisMinus)
+	http.HandleFunc("/levelScanner", ws.levelScanner)
 	//http.HandleFunc("/takePhoto", nil)
 	http.ListenAndServe(":8082", nil)
 }
@@ -45,4 +46,8 @@ func (ws *Webserver) tableAxisPlus(w http.ResponseWriter, r *http.Request) {
 
 func (ws *Webserver) tableAxisMinus(w http.ResponseWriter, r *http.Request) {
 	ws.sc.MoveByManualControl("tb_min")
+}
+
+func (ws *Webserver) levelScanner(w http.ResponseWriter, r *http.Request) {
+	ws.sc.LevelSites()
 }
