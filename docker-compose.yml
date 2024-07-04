@@ -1,0 +1,11 @@
+services:
+  build-node:
+    image: node:20
+    command: sh -c "cd /app && make frontend"
+    volumes:
+      - .:/app
+  build-go:
+    image: golang:1.22
+    command: sh -c "cd /app && make firmware"
+    volumes:
+      - .:/app
