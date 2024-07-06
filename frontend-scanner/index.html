@@ -25,8 +25,9 @@
                     <button id="tableMinus" class="m-2 size-12 bg-slate-500 hover:bg-blue-400 text-white font-bold py-2 px-4 rounded">-</button>
                 </div>
             </div>
-            <button class="mt-4 h-12 bg-blue-700 hover:bg-blue-600 text-gray-200 font-bold py-2 px-4 rounded">Level Scanner</button>
-            <button class="mt-4 h-12 bg-green-700 hover:bg-green-600 text-gray-200 font-bold py-2 px-4 rounded">Start Scanning</button>
+            <button id="levelScanner" class="mt-4 h-12 bg-blue-700 hover:bg-blue-600 text-gray-200 font-bold py-2 px-4 rounded">Level Scanner</button>
+            <button id="setScannerLevel" class="mt-4 h-12 bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold py-2 px-4 rounded">Set Level</button>
+            <button class="opacity-15 mt-4 h-12 bg-green-700 hover:bg-green-600 text-gray-200 font-bold py-2 px-4 rounded">Start Scanning</button>
         </div>
         <div class="flex h-16 flex-col justify-center items-center fixed p-2 bottom-0 w-full text-center">
             <div class="size-full  rounded-xl p-2 bg-gray-800">
@@ -39,6 +40,7 @@
 <script>
 
     let interval = null;
+    const basePath = "https://scanner.local/scanner";
 
 
     function clearInter() {
@@ -50,35 +52,40 @@
 
     function cameraAxisPlus() {
         interval = setInterval(async () => {
-            await fetch("https://api.scanner.local/cameraAxisPlus")
+            await fetch(`${basePath}/cameraAxisPlus`)
             console.log("camera axis plus")
         }, 500);
     }
     
     function cameraAxisMinus() {
         interval = setInterval(async () => {
-            await fetch("https://api.scanner.local/cameraAxisMinus")
+            await fetch(`${basePath}/cameraAxisMinus`)
             console.log("camera axis minus")
         }, 500);
     }
 
     function tableAxisPlus() {
         interval = setInterval(async () => {
-            await fetch("https://api.scanner.local/tableAxisPlus")
+            await fetch(`${basePath}/tableAxisPlus`)
             console.log("table axis plus")
         }, 500);
     }
 
     function tableAxisMinus() {
         interval = setInterval(async () => {
-            await fetch("https://api.scanner.local/tableAxisMinus")
+            await fetch(`${basePath}/tableAxisMinus`)
             console.log("table axis minus")
         }, 500);
     }
 
     async function levelScanner() {
-        await ("https://api.scanner.local/levelScanner")
+        await fetch(`${basePath}/levelScanner`)
         console.log("level scanner")
+    }
+    
+    async function setScannerLevel() {
+        await fetch(`${basePath}/setScannerLevel`)
+        console.log("set scanner level")
     }
 
     document.querySelector("#cameraPlus").addEventListener("mousedown", cameraAxisPlus)
@@ -100,6 +107,9 @@
     document.querySelector("#tableMinus").addEventListener("mouseup", clearInter)
     document.querySelector("#tableMinus").addEventListener("touchdown", tableAxisMinus)
     document.querySelector("#tableMinus").addEventListener("touchup", clearInter)
+
+    document.querySelector("#levelScanner").addEventListener("click", levelScanner)
+    document.querySelector("#setScannerLevel").addEventListener("click", setScannerLevel)
 
 </script>
 </html>

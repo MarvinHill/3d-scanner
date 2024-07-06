@@ -25,11 +25,15 @@ This project contains software and 3d files for a 3d Scanner developed for the V
 The gobot driver for stepper motors was used to controll the scanner 2 axis.
 
 ## Software
-###
-Linux PI Setup:
+### Linux RPI Configuration
 
-install git
-install pi-blaster (for gobot)
+install ansible and docker on host system
+install pi-blaster (for gobot if older rpi is used, not needed for newer) 
+
+### Software Features
+- Auto Leveling of sides
+- Sleep Mode for motors if leveled
+- Max and Min for Motor Axis
 
 ### Gobot setup
 [issue link](https://github.com/hybridgroup/gobot/issues/691)

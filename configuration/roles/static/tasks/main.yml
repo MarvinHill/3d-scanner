@@ -9,7 +9,8 @@
   copy:
     src: ./../build/index.css
     dest: /var/www/html/index.css
-- name: Copy CSS file to remote system
+    
+- name: Copy HTML file to remote system
   copy:
     src: ./../build/index.html
     dest: /var/www/html/index.html

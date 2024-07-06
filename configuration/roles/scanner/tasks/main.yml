@@ -9,3 +9,16 @@
     src: ./../build/scanner
     dest: /var/app/scanner
     mode: '0755'
+
+- name: Register service with systemd
+  copy:
+    src: scanner.service
+    dest: /etc/systemd/system/
+    mode: '0755'
+
+- name: Reload systemd scanner Service
+  ansible.builtin.systemd:
+    state: restarted
+    daemon_reload: true
+    enabled: true
+    name: scanner

@@ -1,0 +1,12 @@
+[Unit]
+Description=Scanner Firmware to controlls GPIO
+
+[Service]
+User=scanner
+WorkingDirectory=/var/app/
+ExecStart=/bin/bash -c "cd /var/app/ && ./scanner"
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

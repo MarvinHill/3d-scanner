@@ -1,17 +1,24 @@
 scanner.local {
+
+    @webapp {
+        path /scanner/*
+    }
+
+    @files {
+        not path /scanner/*
+    }
+
+    reverse_proxy @webapp :8082
+
     root * /var/www/html
-    file_server
+
+    file_server @files
     
     header {
-        Access-Control-Allow-Origin "http://scanner.local, https://scanner.local, http://api.scanner.local, https://api.scanner.local"
+        Access-Control-Allow-Origin "http://scanner.local, https://scanner.local"
         Access-Control-Allow-Methods "GET, POST, OPTIONS, HEAD, PATCH, PUT, DELETE"
         Access-Control-Allow-Headers "User-Agent, Content-Type, X-Api-Key"
         Access-Control-Max-Age 86400
     }
 
-    @api host api.scanner.local
-	handle @api {
-		reverse_proxy localhost:8082
-	}
 }
-
