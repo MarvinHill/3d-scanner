@@ -140,8 +140,6 @@ func (s *ScannerDriver) MoveByManualControl(movement string) {
 	switch movement {
 	case "c_pl":
 		prevPos := s.CurrentPosition
-		wg := sync.WaitGroup{}
-		wg.Add(2)
 		s.CurrentPosition = AddMovementToPosition(s.CurrentPosition, Position{CameraAxis: s.manualStepAmount, TableAxis: 0})
 		s.CurrentPosition.Print()
 		if prevPos.Equals(s.CurrentPosition) {
@@ -150,18 +148,13 @@ func (s *ScannerDriver) MoveByManualControl(movement string) {
 		fmt.Println("Moving camera axis 1")
 		go func() {
 			s.MotorOneCameraDriver.MoveDeg(-s.manualStepAmount * 2)
-			wg.Done()
 		}()
 		fmt.Println("Moving camera axis 2")
 		go func() {
 			s.MotorTwoCameraDriver.MoveDeg(-s.manualStepAmount * 2)
-			wg.Done()
 		}()
-		wg.Wait()
 		break
 	case "c_min":
-		wg := sync.WaitGroup{}
-		wg.Add(2)
 		prevPos := s.CurrentPosition
 		s.CurrentPosition = AddMovementToPosition(s.CurrentPosition, Position{CameraAxis: -s.manualStepAmount, TableAxis: 0})
 		s.CurrentPosition.Print()
@@ -171,14 +164,11 @@ func (s *ScannerDriver) MoveByManualControl(movement string) {
 		fmt.Println("Moving camera axis 1")
 		go func() {
 			go s.MotorOneCameraDriver.MoveDeg(s.manualStepAmount * 2)
-			wg.Done()
 		}()
 		fmt.Println("Moving camera axis 2")
 		go func() {
 			go s.MotorTwoCameraDriver.MoveDeg(s.manualStepAmount * 2)
-			wg.Done()
 		}()
-		wg.Wait()
 		break
 	case "tb_pl":
 		fmt.Println("Moving table")
