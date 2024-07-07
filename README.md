@@ -28,7 +28,7 @@ The gobot driver for stepper motors was used to controll the scanner 2 axis.
 ### Linux RPI Configuration
 
 [Configure Hotspot](https://www.raspberrypi.com/documentation/computers/configuration.html#enable-hotspot)
-`sudo nmcli dev wifi hotspot ifname wlan0 ssid 3dscanner password "test1234"`
+`sudo nmcli dev wifi hotspot ifname wlan0 ssid 3dscanner password "scannerpassword1234"`
 
 install ansible and docker on host system
 install pi-blaster (for gobot if older rpi is used, not needed for newer) 

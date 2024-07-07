@@ -1,3 +1,13 @@
 ---
-- name: Configure WLAN Hotspot
-  shell: nmcli dev wifi hotspot ifname wlan0 ssid 3dscanner password "test1234"    
+- name: Register WIFI service with systemd
+  copy:
+    src: wscan.service
+    dest: /etc/systemd/system/
+    mode: '0755'
+
+- name: Reload systemd wlan scanner service
+  ansible.builtin.systemd:
+    state: restarted
+    daemon_reload: true
+    enabled: true
+    name: wscan
