@@ -1,0 +1,3 @@
+---
+- name: Configure WLAN Hotspot
+  shell: nmcli dev wifi hotspot ifname wlan0 ssid 3dscanner password "test1234"    
