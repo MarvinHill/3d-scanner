@@ -28,6 +28,9 @@
             <button id="levelScanner" class="select-none mt-4 h-12 bg-blue-700 hover:bg-blue-600 text-gray-200 font-bold py-2 px-4 rounded">Level Scanner</button>
             <button id="setScannerLevel" class="select-none mt-4 h-12 bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold py-2 px-4 rounded">Set Level</button>
             <button class="select-none opacity-15 mt-4 h-12 bg-green-700 hover:bg-green-600 text-gray-200 font-bold py-2 px-4 rounded">Start Scanning</button>
+            <input type="number" name="cameraAxisCount" id="cameraAxisCount">
+            <input type="number" name="tableAxisCount" id="tableAxisCount">
+            <button id="startProgram" class="mt-4 h-12 bg-green-700 hover:bg-green-600 text-gray-200 font-bold py-2 px-4 rounded">Start Program</button>
         </div>
     </div>
 </body>
@@ -82,6 +85,31 @@
         console.log("set scanner level")
     }
 
+    async function takePhoto(angleCameraAxis, angleTableAxis) {
+        // await fetch(`${basePath}/takePhoto`, {
+        //   body: {
+        //     angleCameraAxis: angleCameraAxis,
+        //     angleTableAxis: angleTableAxis
+        //   }
+        // })
+        console.log(angleCameraAxis, angleTableAxis)
+    }
+
+    async function runProgram() {
+      cameraAxisCount = document.querySelector("#cameraAxisCount").value
+      tableAxisCount = document.querySelector("#tableAxisCount").value
+      cameraDeltaDegrees = 90 / (cameraAxisCount - 1)
+      tableDeltaDegrees = 360 / (tableAxisCount - 1)
+      
+      // await levelScanner()
+
+      for (let i = 0; i < cameraAxisCount; i++) {
+        for (let j = 0; j < tableAxisCount; j++) {
+          await takePhoto(cameraDeltaDegrees * i, tableDeltaDegrees * j)
+        }
+      }
+    }
+
     document.querySelector("#cameraPlus").addEventListener("mousedown", cameraAxisPlus)
     document.querySelector("#cameraPlus").addEventListener("mouseup", clearInter)
     document.querySelector("#cameraPlus").addEventListener("touchdown", cameraAxisPlus)
@@ -104,6 +132,8 @@
 
     document.querySelector("#levelScanner").addEventListener("click", levelScanner)
     document.querySelector("#setScannerLevel").addEventListener("click", setScannerLevel)
+
+    document.querySelector("#startProgram").addEventListener("click", runProgram)
 
 </script>
 </html>
