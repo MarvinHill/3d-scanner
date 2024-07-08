@@ -27,10 +27,19 @@
             </div>
             <button id="levelScanner" class="select-none mt-4 h-12 bg-blue-700 hover:bg-blue-600 text-gray-200 font-bold py-2 px-4 rounded">Level Scanner</button>
             <button id="setScannerLevel" class="select-none mt-4 h-12 bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold py-2 px-4 rounded">Set Level</button>
-            <button class="select-none opacity-15 mt-4 h-12 bg-green-700 hover:bg-green-600 text-gray-200 font-bold py-2 px-4 rounded">Start Scanning</button>
-            <input type="number" name="cameraAxisCount" id="cameraAxisCount">
-            <input type="number" name="tableAxisCount" id="tableAxisCount">
-            <button id="startProgram" class="mt-4 h-12 bg-green-700 hover:bg-green-600 text-gray-200 font-bold py-2 px-4 rounded">Start Program</button>
+            <button class="select-none opacity-15 my-4 h-12 bg-green-700 hover:bg-green-600 text-gray-200 font-bold py-2 px-4 rounded">Start Scanning</button>
+            
+            <div class="flex flex-col justify-center items-center mt-4 bg-gray-600 min-w-44 rounded-xl p-4">
+              <label class="font-bold text-xl mb-3 text-cente text-gray-200 h-6" for="cameraAxisCount">Kamera Angle Count</label>
+              <input id="cameraAxisCount" class="appearance-none bg-transparent cursor-pointer w-40 my-3" type="range" name="cameraAxisCount" min="2" max="45">
+              <p class="font-bold text-xl mb-3 text-cente text-gray-200 h-6">Amount: <output id="cameraCountOutput">24</output></p>
+
+              <label class="font-bold text-xl mb-3 text-cente text-gray-200 h-6" for="tableAxisCount">Table Angle Count</label>
+              <input id="tableAxisCount" class="appearance-none bg-transparent cursor-pointer w-40 my-3" type="range" name="tableAxisCount" min="2" max="90">
+              <p class="font-bold text-xl mb-3 text-cente text-gray-200 h-6">Amount: <output id="tableCountOutput">46</output></p>
+            </div>
+
+            <button id="startProgram" class="my-4 h-12 bg-green-700 hover:bg-green-600 text-gray-200 font-bold py-2 px-4 rounded">Start Program</button>
         </div>
     </div>
 </body>
@@ -110,6 +119,15 @@
       }
     }
 
+    function onCameraCountChange(event) {
+      cameraCountOutput = document.querySelector("#cameraCountOutput")
+      cameraCountOutput.value = event.target.value
+    }
+    function onTableCountChange(event) {
+      tableCountOutput = document.querySelector("#tableCountOutput")
+      tableCountOutput.value = event.target.value
+    }
+
     document.querySelector("#cameraPlus").addEventListener("mousedown", cameraAxisPlus)
     document.querySelector("#cameraPlus").addEventListener("mouseup", clearInter)
     document.querySelector("#cameraPlus").addEventListener("touchdown", cameraAxisPlus)
@@ -133,7 +151,9 @@
     document.querySelector("#levelScanner").addEventListener("click", levelScanner)
     document.querySelector("#setScannerLevel").addEventListener("click", setScannerLevel)
 
-    document.querySelector("#startProgram").addEventListener("click", runProgram)
+    document.querySelector("#cameraAxisCount").addEventListener("input", onCameraCountChange)
+    document.querySelector("#tableAxisCount").addEventListener("input", onTableCountChange)
 
+    document.querySelector("#startProgram").addEventListener("click", runProgram)
 </script>
 </html>
