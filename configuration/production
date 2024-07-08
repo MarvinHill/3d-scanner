@@ -2,6 +2,7 @@
 ansible_connection=ssh
 ansible_user=scanner
 ansible_ssh_pass=************
+ansible_ssh_common_args="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
 [rpi]
 scanner.local
