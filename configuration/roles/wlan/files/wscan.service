@@ -4,7 +4,7 @@ Description=Configures Scanner Wifi Hotspot
 [Service]
 User=root
 WorkingDirectory=/var/app/
-ExecStart=/bin/bash -c "sudo nmcli dev wifi hotspot ifname wlan0 ssid 3dscanner password \"scannerpassword1234\""
+ExecStart=/bin/bash -c "sudo nmcli device wifi hotspot ssid 3dscanner password \"scannerp\""
 Restart=always
 RestartSec=3
 
