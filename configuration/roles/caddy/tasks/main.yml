@@ -54,4 +54,4 @@
     dest: /etc/caddy/Caddyfile
 
 - name: Enable and start Caddy service
-  shell: caddy reload --config /etc/caddy/Caddyfile
+  shell: sudo caddy reload --config /etc/caddy/Caddyfile
