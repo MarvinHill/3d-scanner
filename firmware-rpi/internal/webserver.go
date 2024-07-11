@@ -94,7 +94,14 @@ func (ws *Webserver) takePhoto(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	photo := ws.sc.TakePhoto(photoRequest)
+	photo, err := ws.sc.TakePhoto(photoRequest)
+
+	if err != nil {
+		fmt.Println("Error taking photo")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	photoJson, err := json.Marshal(photo)
 
 	if err != nil {

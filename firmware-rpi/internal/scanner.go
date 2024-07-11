@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
@@ -40,6 +41,7 @@ const (
 
 	MaxMotorSteps = 2048.0
 	MaxDeg        = 360.0
+	ImagePath     = "/tmp/image.jpg"
 )
 
 // Steps to Degres
@@ -164,14 +166,15 @@ func (s *ScannerDriver) TakePhoto(request PhotoRequest) (Photo, error) {
 
 	// s.takePhoto()
 
-	cmd := exec.Command("rpicam-still", "-o", "/var/images/image.jpg")
+	cmd := exec.Command("rpicam-still", "-o", ImagePath)
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println("Error taking photo")
+		fmt.Println(err)
 		return Photo{}, errors.New("Error taking photo")
 	}
 
-	fileData, err := os.ReadFile("/var/images/image.jpg")
+	fileData, err := os.ReadFile(ImagePath)
 
 	if err != nil {
 		fmt.Println("Error loading photo as byte array")
@@ -180,10 +183,12 @@ func (s *ScannerDriver) TakePhoto(request PhotoRequest) (Photo, error) {
 
 	fmt.Println("Photo taken")
 
+	encoder := base64.StdEncoding
+
 	return Photo{
 		AngleCameraAxis: s.CurrentPosition.CameraAxis,
 		AngleTableAxis:  s.CurrentPosition.TableAxis,
-		PhotoData:       string(fileData),
+		PhotoData:       encoder.EncodeToString(fileData),
 	}, nil
 }
 
