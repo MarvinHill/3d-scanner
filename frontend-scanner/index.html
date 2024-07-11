@@ -95,12 +95,13 @@
     }
 
     async function takePhoto(angleCameraAxis, angleTableAxis) {
-        // await fetch(`${basePath}/takePhoto`, {
-        //   body: {
-        //     angleCameraAxis: angleCameraAxis,
-        //     angleTableAxis: angleTableAxis
-        //   }
-        // })
+        await fetch(`${basePath}/takePhoto`, {
+        method: "POST",
+        body: JSON.stringify({
+            angleCameraAxis: angleCameraAxis,
+            angleTableAxis: angleTableAxis
+        }),
+        })
         console.log(angleCameraAxis, angleTableAxis)
     }
 
@@ -114,7 +115,7 @@
 
       for (let i = 0; i < cameraAxisCount; i++) {
         for (let j = 0; j < tableAxisCount; j++) {
-          await takePhoto(cameraDeltaDegrees * i, tableDeltaDegrees * j)
+          await takePhoto(Math.floor(cameraDeltaDegrees * i), Math.floor(tableDeltaDegrees * j))
         }
       }
     }
