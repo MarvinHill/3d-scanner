@@ -20,6 +20,7 @@ func NewPosition(cameraAxis int, tableAxis int) Position {
 
 func AddMovementToPosition(position Position, movement Position) Position {
 	fmt.Println("Adding movement to position")
+	fmt.Println("Position: camera:", position.CameraAxis, "table:", position.TableAxis)
 	cameraAxis := position.CameraAxis + movement.CameraAxis
 	tableAxis := (position.TableAxis + movement.TableAxis) % MaxRotationOnTableAxis
 

@@ -1,7 +1,10 @@
 package internal
 
 import (
+	"errors"
 	"fmt"
+	"os"
+	"os/exec"
 	"sync"
 	"time"
 
@@ -55,13 +58,34 @@ func NewScannerDriver() *ScannerDriver {
 	return s
 }
 
+func (s *ScannerDriver) LevelAll() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.levelAll()
+}
+
 func (s *ScannerDriver) LevelSites() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	fmt.Println("Leveling Scanner")
+	s.levelSites()
+}
 
-	// todo check if already level
+func (s *ScannerDriver) levelAll() {
+	fmt.Println("Leveling Scanner")
+	s.level()
+	s.CurrentPosition = NewPosition(0, 0)
+}
+
+func (s *ScannerDriver) levelSites() {
+	fmt.Println("Leveling Scanner CameraAxis")
+	s.level()
+	s.CurrentPosition = NewPosition(0, s.CurrentPosition.TableAxis)
+}
+
+func (s *ScannerDriver) level() {
+	fmt.Println("level")
 	oneLevel := false
 	twoLevel := false
 
@@ -106,29 +130,61 @@ func (s *ScannerDriver) LevelSites() {
 	}
 	fmt.Println("Scanner leveled")
 	s.ResetMotors()
-	s.CurrentPosition = NewPosition(0, 0)
 }
 
-func (s *ScannerDriver) TakePhoto(request PhotoRequest) Photo {
+func (s *ScannerDriver) TakePhoto(request PhotoRequest) (Photo, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	requestedPos := request.ToPosition()
+	// if s.CurrentPosition.TableAxis != request.ToPosition().TableAxis {
+	// 	s.levelSites()
+	// }
 
+	requestedPos := request.ToPosition()
 	tableAxisDiff := requestedPos.TableAxis - s.CurrentPosition.TableAxis // invert because of stepper motor mounting direction
 	cameraAxisDiff := requestedPos.CameraAxis - s.CurrentPosition.CameraAxis
 
+	var wg sync.WaitGroup
+	wg.Add(2)
+
 	fmt.Println("Moving camera axis 1")
-	go s.MotorOneCameraDriver.MoveDeg(-cameraAxisDiff * 2)
+	go func() {
+		s.MotorOneCameraDriver.MoveDeg(-cameraAxisDiff * 2)
+		wg.Done()
+	}()
 	fmt.Println("Moving camera axis 2")
-	go s.MotorTwoCameraDriver.MoveDeg(-cameraAxisDiff * 2)
+	go func() {
+		go s.MotorTwoCameraDriver.MoveDeg(-cameraAxisDiff * 2)
+		wg.Done()
+	}()
 	fmt.Println("Moving table")
 	s.MotorTableDriver.MoveDeg(tableAxisDiff)
+	wg.Wait()
 	s.CurrentPosition = AddMovementToPosition(s.CurrentPosition, NewPosition(cameraAxisDiff, tableAxisDiff))
 
 	// s.takePhoto()
 
-	return Photo{}
+	cmd := exec.Command("rpicam-still", "-o", "/var/images/image.jpg")
+	err := cmd.Run()
+	if err != nil {
+		fmt.Println("Error taking photo")
+		return Photo{}, errors.New("Error taking photo")
+	}
+
+	fileData, err := os.ReadFile("/var/images/image.jpg")
+
+	if err != nil {
+		fmt.Println("Error loading photo as byte array")
+		return Photo{}, errors.New("Error taking photo")
+	}
+
+	fmt.Println("Photo taken")
+
+	return Photo{
+		AngleCameraAxis: s.CurrentPosition.CameraAxis,
+		AngleTableAxis:  s.CurrentPosition.TableAxis,
+		PhotoData:       string(fileData),
+	}, nil
 }
 
 func (s *ScannerDriver) MoveByManualControl(movement string) {
@@ -192,20 +248,10 @@ func (s *ScannerDriver) Run() {
 	s.MotorOneCameraDriver.Start()
 	s.MotorTwoCameraDriver.Start()
 
-	// // Reset Table Motor Output Pins
-	// s.Adapter.DigitalWrite(motorTable1, 0)
-	// s.Adapter.DigitalWrite(motorTable2, 0)
-	// s.Adapter.DigitalWrite(motorTable3, 0)
-	// s.Adapter.DigitalWrite(motorTable4, 0)
-	// // Reset Camera Motor Output Pins
-	// s.Adapter.DigitalWrite(motorOne1, 0)
-	// s.Adapter.DigitalWrite(motorOne2, 0)
-	// s.Adapter.DigitalWrite(motorOne3, 0)
-	// s.Adapter.DigitalWrite(motorOne4, 0)
-	// s.Adapter.DigitalWrite(motorTwo1, 0)
-	// s.Adapter.DigitalWrite(motorTwo2, 0)
-	// s.Adapter.DigitalWrite(motorTwo3, 0)
-	// s.Adapter.DigitalWrite(motorTwo4, 0)
+	s.MotorTableDriver.SetSpeed(20)
+	s.MotorOneCameraDriver.SetSpeed(10)
+	s.MotorTwoCameraDriver.SetSpeed(10)
+
 	s.ResetMotors()
 
 	// Sensor 1
