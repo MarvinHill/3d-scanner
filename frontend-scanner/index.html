@@ -95,14 +95,24 @@
     }
 
     async function takePhoto(angleCameraAxis, angleTableAxis) {
-        await fetch(`${basePath}/takePhoto`, {
+        let respose = await fetch(`${basePath}/takePhoto`, {
         method: "POST",
         body: JSON.stringify({
             angleCameraAxis: angleCameraAxis,
             angleTableAxis: angleTableAxis
         }),
         })
+        respose = await respose.json()
+        addImage(respose.photoData)
         console.log(angleCameraAxis, angleTableAxis)
+    }
+
+    function addImage(data){
+        let img = document.createElement("img")
+        img.src = `data:image/png;base64,${data}`
+        img.style.width = "500px"
+        img.style.height = "500px"
+        document.body.appendChild(img)
     }
 
     async function runProgram() {
