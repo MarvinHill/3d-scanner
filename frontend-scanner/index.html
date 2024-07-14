@@ -70,11 +70,11 @@
 
     function startDebugMode(){
         interval = setInterval(async () => {
-            let respose = await fetch(`${basePath}/debugPhoto`, {
+            let response = await fetch(`${basePath}/debugPhoto`, {
             method: "POST",
             })
-            respose = await respose.json()
-            replaceImage(respose.photoData)
+            response = await response.json()
+            replaceImage(response.photoData)
         }, 3000);
     }
 
@@ -130,16 +130,16 @@
     }
 
     async function takePhoto(angleCameraAxis, angleTableAxis) {
-        let respose = await fetch(`${basePath}/takePhoto`, {
+        let response = await fetch(`${basePath}/takePhoto`, {
         method: "POST",
         body: JSON.stringify({
             angleCameraAxis: angleCameraAxis,
             angleTableAxis: angleTableAxis
         }),
         })
-        respose = await respose.json()
-        downloadImageToFile(respose.photoData, angleCameraAxis, angleTableAxis)
-        addImage(respose.photoData)
+        response = await response.json()
+        downloadImageToFile(response.photoData, angleCameraAxis, angleTableAxis)
+        addImage(response.photoData)
         console.log(angleCameraAxis, angleTableAxis)
     }
 
@@ -148,7 +148,17 @@
         img.src = `data:image/jpeg;base64,${data}`
         img.style.width = "500px"
         img.style.height = "500px"
+        img.addEventListener("click", () => downloadImage(img.src))
         document.body.appendChild(img)
+      }
+      
+    function downloadImage(url) {
+      const a = document.createElement('a')
+      a.href = url
+      a.download = url.split('/').pop()
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
     }
 
     function downloadImageToFile(base64Data, cameraAxis, tableAxis){
