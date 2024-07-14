@@ -140,14 +140,23 @@
     }
 
     async function takePhoto(angleCameraAxis, angleTableAxis) {
-        let response = await fetch(`${basePath}/takePhoto`, {
-        method: "POST",
-        body: JSON.stringify({
-            angleCameraAxis: angleCameraAxis,
-            angleTableAxis: angleTableAxis
-        }),
-        })
-        response = await response.json()
+        let photoDone = false;
+        let response = null;
+
+        while(!photoDone){
+            try {
+                response = await fetch(`${basePath}/takePhoto`, {
+                method: "POST",
+                body: JSON.stringify({
+                    angleCameraAxis: angleCameraAxis,
+                    angleTableAxis: angleTableAxis
+                }),
+                })
+                response = await response.json()
+                photoDone = true;
+            } catch(e){}
+        }
+        
         if(checkIfAutoDownloadIsEnabled()){
             downloadImageToFile(response.photoData, angleCameraAxis, angleTableAxis)
         }
