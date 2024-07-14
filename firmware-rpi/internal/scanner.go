@@ -134,7 +134,7 @@ func (s *ScannerDriver) level() {
 	s.ResetMotors()
 }
 
-func (s *ScannerDriver) TakePhoto(request PhotoRequest) (Photo, error) {
+func (s *ScannerDriver) TakePhotoAtPosition(request PhotoRequest) (Photo, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -166,30 +166,54 @@ func (s *ScannerDriver) TakePhoto(request PhotoRequest) (Photo, error) {
 
 	// s.takePhoto()
 
+	encodedPhoto, err := s.takePhoto()
+
+	if err != nil {
+		return Photo{}, err
+	}
+
+	return Photo{
+		AngleCameraAxis: s.CurrentPosition.CameraAxis,
+		AngleTableAxis:  s.CurrentPosition.TableAxis,
+		PhotoData:       encodedPhoto,
+	}, nil
+}
+
+func (s *ScannerDriver) TakePhoto() (Photo, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	p, err := s.takePhoto()
+	if err != nil {
+		return Photo{}, err
+	}
+	return Photo{
+		AngleCameraAxis: s.CurrentPosition.CameraAxis,
+		AngleTableAxis:  s.CurrentPosition.TableAxis,
+		PhotoData:       p,
+	}, nil
+}
+
+func (s *ScannerDriver) takePhoto() (string, error) {
 	cmd := exec.Command("rpicam-still", "-o", ImagePath)
 	err := cmd.Run()
 	if err != nil {
 		fmt.Println("Error taking photo")
 		fmt.Println(err)
-		return Photo{}, errors.New("Error taking photo")
+		return "", errors.New("Error taking photo")
 	}
 
 	fileData, err := os.ReadFile(ImagePath)
 
 	if err != nil {
 		fmt.Println("Error loading photo as byte array")
-		return Photo{}, errors.New("Error taking photo")
+		return "", errors.New("Error taking photo")
 	}
 
 	fmt.Println("Photo taken")
 
 	encoder := base64.StdEncoding
 
-	return Photo{
-		AngleCameraAxis: s.CurrentPosition.CameraAxis,
-		AngleTableAxis:  s.CurrentPosition.TableAxis,
-		PhotoData:       encoder.EncodeToString(fileData),
-	}, nil
+	return encoder.EncodeToString(fileData), nil
 }
 
 func (s *ScannerDriver) MoveByManualControl(movement string) {

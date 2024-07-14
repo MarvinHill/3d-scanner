@@ -15,6 +15,10 @@ func NewPosition(cameraAxis int, tableAxis int) Position {
 		inputCameraAxis = 90
 	}
 
+	if inputTableAxis < 0 {
+		inputTableAxis = 360 + inputTableAxis
+	}
+
 	return Position{CameraAxis: inputCameraAxis, TableAxis: inputTableAxis}
 }
 

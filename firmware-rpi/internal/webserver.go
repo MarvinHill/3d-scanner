@@ -27,6 +27,7 @@ func (ws *Webserver) Run() {
 	http.HandleFunc("/scanner/levelScanner", ws.levelScanner)
 	http.HandleFunc("/scanner/setScannerLevel", ws.setScannerLevel)
 	http.HandleFunc("/scanner/takePhoto", ws.takePhoto)
+	http.HandleFunc("/scanner/debugPhoto", ws.debugPhoto)
 	http.HandleFunc("/", logAll)
 	http.ListenAndServe(":8082", nil)
 }
@@ -67,6 +68,24 @@ func (ws *Webserver) setScannerLevel(writer http.ResponseWriter, request *http.R
 	ws.sc.SetScannerLevel()
 }
 
+func (ws *Webserver) debugPhoto(w http.ResponseWriter, r *http.Request) {
+	p, err := ws.sc.TakePhoto()
+
+	if err != nil {
+		fmt.Println("Error taking debug photo")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	data, err := json.Marshal(p)
+	if err != nil {
+		fmt.Println("Error marshaling debug photo")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+
+	}
+	w.Write(data)
+}
+
 func (ws *Webserver) takePhoto(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Webserver request take photo")
 
@@ -94,7 +113,7 @@ func (ws *Webserver) takePhoto(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	photo, err := ws.sc.TakePhoto(photoRequest)
+	photo, err := ws.sc.TakePhotoAtPosition(photoRequest)
 
 	if err != nil {
 		fmt.Println("Error taking photo")
