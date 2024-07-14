@@ -2,6 +2,6 @@
 - name: Stop systemd wlan scanner service
   ansible.builtin.systemd:
     state: stopped
-    daemon_reload: true
-    enabled: false
+    daemon_reload: false
+    enabled: true
     name: wscan
