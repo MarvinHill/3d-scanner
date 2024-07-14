@@ -138,7 +138,7 @@
         }),
         })
         respose = await respose.json()
-        downloadImage(respose.photoData, angleCameraAxis, angleTableAxis)
+        downloadImageToFile(respose.photoData, angleCameraAxis, angleTableAxis)
         addImage(respose.photoData)
         console.log(angleCameraAxis, angleTableAxis)
     }
@@ -151,7 +151,7 @@
         document.body.appendChild(img)
     }
 
-    function downloadImage(base64Data, cameraAxis, tableAxis){
+    function downloadImageToFile(base64Data, cameraAxis, tableAxis){
         const data = `data:image/jpeg;base64,${base64Data}`;
         const fileName = `camera${cameraAxis}_table${tableAxis}.jpg`;
         const linkElement = document.getElementById("fileDownload");
