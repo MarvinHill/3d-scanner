@@ -65,6 +65,7 @@
                 <div id="debugPhoto"></div>
             </div>
             <a id="fileDownload" class="hidden"></a>
+            <div id="photos" class="flex w-screen flex-wrap justify-center"></div>
         </div>
 
     </div>
@@ -160,7 +161,7 @@
         img.style.width = "500px"
         img.style.height = "500px"
         img.addEventListener("click", () => downloadImage(img.src))
-        document.body.appendChild(img)
+        document.querySelector("#photos").appendChild(img)
       }
       
     function downloadImage(url) {
@@ -211,16 +212,18 @@
     async function runProgram() {
       cameraAxisCount = document.querySelector("#cameraAxisCount").value
       tableAxisCount = document.querySelector("#tableAxisCount").value
-      cameraDeltaDegrees = 90 / (cameraAxisCount - 1)
+      cameraDeltaDegrees = 50 / (cameraAxisCount - 1)
       tableDeltaDegrees = 360 / (tableAxisCount - 1)
       
-      // await levelScanner()
+      
 
-      for (let i = 40; i < cameraAxisCount; i++) {
+      for (let i = 0; i < cameraAxisCount; i++) {
         for (let j = 0; j < tableAxisCount; j++) {
-          await takePhoto(Math.floor(cameraDeltaDegrees * i), Math.floor(tableDeltaDegrees * j))
+          await takePhoto(Math.floor((cameraDeltaDegrees * i) + 40), Math.floor(tableDeltaDegrees * j))
         }
       }
+      
+    await levelScanner()
     }
 
     function onCameraCountChange(event) {
