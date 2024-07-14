@@ -3,22 +3,19 @@
 - name: wifi setup
   shell: sudo nmcli general hostname scanner.local
 
-- name: wifi setup
-  shell: sudo nmcli general hostname scanner.local
-
-- name: wifi setup
-  shell: sudo nmcli device wifi hotspot ssid 3dscanner password "scannerp"
+# - name: wifi setup
+#   shell: sudo nmcli device wifi hotspot ssid 3dscanner password "scannerp"
                 
 
-# - name: Register WIFI service with systemd
-#   copy:
-#     src: wscan.service
-#     dest: /etc/systemd/system/
-#     mode: '0755'
+- name: Register WIFI service with systemd
+  copy:
+    src: wscan.service
+    dest: /etc/systemd/system/
+    mode: '0755'
 
-# - name: Reload systemd wlan scanner service
-#   ansible.builtin.systemd:
-#     state: restarted
-#     daemon_reload: true
-#     enabled: true
-#     name: wscan   
+- name: Reload systemd wlan scanner service
+  ansible.builtin.systemd:
+    state: restarted
+    daemon_reload: true
+    enabled: true
+    name: wscan   
