@@ -27,7 +27,6 @@
             </div>
             <button id="levelScanner" class="select-none mt-4 h-12 bg-blue-700 hover:bg-blue-600 text-gray-200 font-bold py-2 px-4 rounded">Level Scanner</button>
             <button id="setScannerLevel" class="select-none mt-4 h-12 bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold py-2 px-4 rounded">Set Level</button>
-            <button class="select-none opacity-15 my-4 h-12 bg-green-700 hover:bg-green-600 text-gray-200 font-bold py-2 px-4 rounded">Start Scanning</button>
             
             <div class="flex flex-col justify-center items-center mt-4 bg-gray-600 min-w-44 rounded-xl p-4">
               <label class="font-bold text-xl mb-3 text-cente text-gray-200 h-6" for="cameraAxisCount">Kamera Angle Count</label>
@@ -40,6 +39,16 @@
             </div>
 
             <button id="startProgram" class="my-4 h-12 bg-green-700 hover:bg-green-600 text-gray-200 font-bold py-2 px-4 rounded">Start Program</button>
+            <div class='flex flex-row'>
+                <input type="checkbox" id="downloadCheckbox" value="cb1"
+                class='appearance-none h-6 w-6 bg-gray-400 rounded-full 
+                    checked:bg-green-300 checked:scale-75
+                    transition-all duration-200 peer'/>
+                <div class='h-6 w-6 absolute rounded-full pointer-events-none
+                peer-checked:border-green-300 peer-checked:border-2'>
+                </div>
+                <label for='downloadCheckbox' class='flex flex-col justify-center px-2 text-white peer-checked:text-green-400  select-none'>Auto Download Images</label>
+            </div>
             <!-- Checkbox Debug mode START -->
             <div class='flex flex-row'>
                 <input type="checkbox" id="debugCheckbox" value="cb1"
@@ -49,7 +58,7 @@
                 <div class='h-6 w-6 absolute rounded-full pointer-events-none
                 peer-checked:border-green-300 peer-checked:border-2'>
                 </div>
-                <label for='cb1' class='flex flex-col justify-center px-2 text-white peer-checked:text-green-400  select-none'>Debug Mode</label>
+                <label for='debugCheckbox' class='flex flex-col justify-center px-2 text-white peer-checked:text-green-400  select-none'>Debug Mode</label>
             </div>
             <!-- Checkbox Debug mode END -->
             <div id="debugWrapper">
@@ -66,7 +75,7 @@
     let debugInterval = null;
     const basePath = "https://scanner.local/scanner";
 
-    const permission = await Notification.requestPermission();
+    const permission = Notification.requestPermission();
 
     function startDebugMode(){
         interval = setInterval(async () => {
@@ -138,7 +147,9 @@
         }),
         })
         response = await response.json()
-        downloadImageToFile(response.photoData, angleCameraAxis, angleTableAxis)
+        if(checkIfAutoDownloadIsEnabled()){
+            downloadImageToFile(response.photoData, angleCameraAxis, angleTableAxis)
+        }
         addImage(response.photoData)
         console.log(angleCameraAxis, angleTableAxis)
     }
@@ -189,6 +200,14 @@
         document.querySelector("#debugWrapper").classList.remove("hidden")
     }
 
+    function checkIfAutoDownloadIsEnabled(){
+        const downloadCheckbox = document.querySelector("#downloadCheckbox");
+        if(downloadCheckbox.checked){
+            return true;
+        }
+        return false;
+    }
+
     async function runProgram() {
       cameraAxisCount = document.querySelector("#cameraAxisCount").value
       tableAxisCount = document.querySelector("#tableAxisCount").value
@@ -197,7 +216,7 @@
       
       // await levelScanner()
 
-      for (let i = 0; i < cameraAxisCount; i++) {
+      for (let i = 40; i < cameraAxisCount; i++) {
         for (let j = 0; j < tableAxisCount; j++) {
           await takePhoto(Math.floor(cameraDeltaDegrees * i), Math.floor(tableDeltaDegrees * j))
         }
