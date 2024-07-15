@@ -143,7 +143,7 @@ func (s *ScannerDriver) TakePhotoAtPosition(request PhotoRequest) (Photo, error)
 	// }
 
 	requestedPos := request.ToPosition()
-	tableAxisDiff := requestedPos.TableAxis - s.CurrentPosition.TableAxis // invert because of stepper motor mounting direction
+	tableAxisDiff := requestedPos.TableAxis - s.CurrentPosition.TableAxis
 	cameraAxisDiff := requestedPos.CameraAxis - s.CurrentPosition.CameraAxis
 
 	var wg sync.WaitGroup
@@ -162,9 +162,7 @@ func (s *ScannerDriver) TakePhotoAtPosition(request PhotoRequest) (Photo, error)
 	fmt.Println("Moving table")
 	s.MotorTableDriver.MoveDeg(tableAxisDiff)
 	wg.Wait()
-	s.CurrentPosition = AddMovementToPosition(s.CurrentPosition, NewPosition(cameraAxisDiff, tableAxisDiff))
-
-	// s.takePhoto()
+	s.CurrentPosition = requestedPos
 
 	encodedPhoto, err := s.takePhoto()
 
