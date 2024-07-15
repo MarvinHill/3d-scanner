@@ -154,7 +154,9 @@
                 })
                 response = await response.json()
                 photoDone = true;
-            } catch(e){}
+            } catch(e){
+                await new Promise(resolve => setTimeout(resolve, ms))
+            }
         }
         
         if(checkIfAutoDownloadIsEnabled()){
@@ -231,7 +233,7 @@
           await takePhoto(Math.floor((cameraDeltaDegrees * i) + 40), Math.floor(tableDeltaDegrees * j))
         }
       }
-      
+
     await levelScanner()
     }
 
