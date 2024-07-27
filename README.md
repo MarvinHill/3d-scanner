@@ -2,6 +2,9 @@
 This project contains software and 3d files for a 3d Scanner developed for the Virtual Reality Course at Hochschule Heilbronn in SoSE 2024.
 ## Showcase
 ## Features
+- Manual control of the scanner movement on two axis
+- Motor leveling of the axis that holds the camera with end-switches
+- Automated photo mode where the scanner takes a specified amount of photos from multiple distributed angles, so that the images cover the object from all Sites
 ## Structure
 - configuration: contains ansible playbooks to configure the rpi and install the scanner firmware, and caddy webserver.
 - firmware-rpi: contains firmware to controll the scanner
