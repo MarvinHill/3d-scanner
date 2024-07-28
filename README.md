@@ -1,6 +1,11 @@
 # 3d-scanner
 This project contains software and 3d files for a 3d Scanner developed for the Virtual Reality Course at Hochschule Heilbronn in SoSE 2024.
 ## Showcase
+
+
+https://github.com/user-attachments/assets/66f47e95-8ec8-498e-958c-c9a36b86d276
+
+
 ## Features
 - Manual control of the scanner movement on two axis
 - Motor leveling of the axis that holds the camera with end-switches
