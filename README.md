@@ -2,6 +2,7 @@
 This project contains software and 3d files for a 3d Scanner developed for the Virtual Reality Course at Hochschule Heilbronn in SoSE 2024.
 ## Showcase
 
+![blueprint](https://github.com/user-attachments/assets/81f2d787-ee72-472c-a32e-a927f29f6c98)
 
 https://github.com/user-attachments/assets/66f47e95-8ec8-498e-958c-c9a36b86d276
 
