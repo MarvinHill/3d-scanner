@@ -17,6 +17,7 @@ https://github.com/user-attachments/assets/66f47e95-8ec8-498e-958c-c9a36b86d276
 - frontent-scanner: contains the frontend for the webservice to controll the scanner with a graphical ui
 - 3d: contains 3d files to build the scanner
 ## 3D Modells
+stl files can be found in the 3d folder, look at the blueprint in the readme to understand where which part fits
 ## Used Hardware
 - Raspberry Pi zero 2w
 - m3 screws & m3 threat inserts
